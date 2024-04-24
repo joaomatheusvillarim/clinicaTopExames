@@ -15,7 +15,7 @@ Projeto de Banco de Dados I 2023.2
 2. Liste as especialidades em que o nome dos médicos requisitante é o mais comum.
 3. **Exiba o nome do convênio e o endereço do convênio e a quantidade de médicos
 requisitantes que atendem pelo convênio, ordenando o resultado em ordem
-decrescente.**
+decrescente.** [Solução](https://github.com/joaomatheusvillarim/clinicaTopExames/blob/main/sql/questao3.sql)
 4. Liste o nome e cpf dos médicos requisitantes que solicitaram exames onde o prazo é
 maior que 30 dias e menor que 60 dias.
 5. Recupere o(s) nome(s) do(s) convênio(s) que o valor médio do atendimento é R$
