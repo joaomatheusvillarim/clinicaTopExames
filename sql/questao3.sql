@@ -6,14 +6,14 @@ decrescente.
 */
 
 SELECT
-    convenio.nome,
-    convenio.endereco,
-    COUNT(convenio_medico_requisitante.codigo_medico_requisitante) AS quantidade_medicos_convenio
+  convenio.nome,
+  convenio.endereco,
+  COUNT(convenio_medico_requisitante.codigo_medico_requisitante) AS quantidade_medicos_convenio
 FROM
-    convenio
-    LEFT JOIN convenio_medico_requisitante ON convenio.codigo_ans = convenio_medico_requisitante.codigo_ans
+  convenio
+  LEFT JOIN convenio_medico_requisitante ON convenio.codigo_ans = convenio_medico_requisitante.codigo_ans
 GROUP BY
-    convenio.nome,
-    convenio.endereco
+  convenio.nome,
+  convenio.endereco
 ORDER BY
-    quantidade_medicos_convenio DESC;
+  quantidade_medicos_convenio DESC

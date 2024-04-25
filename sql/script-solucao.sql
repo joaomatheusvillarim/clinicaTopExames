@@ -1,344 +1,288 @@
--- PACIENTES
+CREATE TABLE PACIENTE(
+  CPF CHAR(11),
+  NOME VARCHAR(70) NOT NULL,
+  EMAIL VARCHAR(170) NOT NULL,
+  SEXO CHAR(10), 
+  DATA_NASCIMENTO DATE,
+  END_CEP CHAR(8),
+  END_ESTADO VARCHAR(30),
+  END_CIDADE VARCHAR(50),
+  END_BAIRRO VARCHAR(30),
+  END_NUMERO VARCHAR(10),
+  END_RUA VARCHAR(50),
 
--- Entidade regular Paciente
-CREATE TABLE Pacientes (
-    cpf VARCHAR2(11),
-    sexo CHAR(1),
-    nome VARCHAR2(255),
-    email VARCHAR2(255),
-    data_nascimento DATE,
-    cep VARCHAR2(8),
-    estado VARCHAR2(255),
-    cidade VARCHAR2(255),
-    bairro VARCHAR2(255),
-    rua VARCHAR2(255),
-    numero VARCHAR(5),
-
-    CONSTRAINT pk_paciente_cpf
-        PRIMARY KEY (cpf),
-    CONSTRAINT ck_paciente_cpf
-        CHECK(LENGTH(cpf) = 11),
-    CONSTRAINT ck_paciente_sexo
-        CHECK(sexo in ('M', 'F')),
-    CONSTRAINT ck_paciente_cep
-        CHECK(LENGTH(cep) = 8)
+  CONSTRAINT PACIENTE_PK
+    PRIMARY KEY(CPF)
 );
 
--- Atributo multivalorado Paciente(telefones)
-CREATE TABLE Telefones_paciente (
-    cpf_paciente VARCHAR2(11),
-    telefone VARCHAR2(11),
-
-    CONSTRAINT pk_fone_paciente
-        PRIMARY KEY (cpf_paciente, telefone),
-    CONSTRAINT fk_fone_paciente_cpf
-        FOREIGN KEY (cpf_paciente)
-        REFERENCES Pacientes(cpf)
-        ON DELETE CASCADE,
-    CONSTRAINT ck_fone_paciente
-        CHECK(LENGTH(telefone) >= 10)
+CREATE TABLE TELEFONES_PACIENTES(
+  CPF CHAR(11),
+  NUMERO CHAR(12) NOT NULL,
+  CONSTRAINT TELEFONE_PACIENTE_PK
+    PRIMARY KEY(CPF, NUMERO),
+  CONSTRAINT CODIGO_PACIENTE_FK
+    FOREIGN KEY (CPF)
+    REFERENCES PACIENTE(CPF)
 );
 
---MEDICOS
+CREATE TABLE CONVENIO(
+  CODIGO_ANS CHAR(10),
+  CODIGO_OPERADORA CHAR(15) NOT NULL,
+  CNPJ CHAR(14) NOT NULL,
+  NOME VARCHAR(40) NOT NULL,
+  ENDERECO VARCHAR(200) NOT NULL,
+  EMAIL VARCHAR(170) NOT NULL,
 
--- Superclasse Médicos
-CREATE TABLE Medicos (
-    codigo VARCHAR(255),
-    cpf VARCHAR2(11),
-    cnpj VARCHAR2(14),
-    CRM_numero VARCHAR2(6),
-    CRM_estado VARCHAR2(2),
-    nome VARCHAR2(255),
-    especialidade VARCHAR2(255),
-
-    CONSTRAINT pk_medicos_codigo
-        PRIMARY KEY (codigo),
-    CONSTRAINT ck_medicos_cpf
-        CHECK(LENGTH(cpf) = 11),
-    CONSTRAINT ck_medicos_cnpj
-        CHECK(LENGTH(cnpj) = 14),
-    CONSTRAINT ck_medicos_crm_estado
-        CHECK(LENGTH(CRM_estado) = 2)
+  CONSTRAINT CONVENIO_PK
+    PRIMARY KEY (CODIGO_ANS)
 );
 
--- Subclasse Médico Requisitante
-CREATE TABLE Medico_requisitante (
-    medico_cod VARCHAR2(255),
-    rua VARCHAR2(255),
-    bairro VARCHAR2(255),
-    cidade VARCHAR2(255),
-    estado VARCHAR2(255),
-    cep VARCHAR2(8),
+CREATE TABLE TELEFONES_CONVENIO(
+  CODIGO_ANS CHAR(10),
+  NUMERO CHAR(12),
 
-    CONSTRAINT pk_med_req_cod
-        PRIMARY KEY (medico_cod),
-    CONSTRAINT fk_med_req_cod
-        FOREIGN KEY (medico_cod)
-        REFERENCES Medicos(codigo)
-        ON DELETE CASCADE,
-    CONSTRAINT ck_med_req_cep
-        CHECK(LENGTH(cep) = 8)
+  CONSTRAINT TELEFONE_CONVENIO_PK
+    PRIMARY KEY(CODIGO_ANS, NUMERO),
+  CONSTRAINT CODIGO_CONVENIO_FK
+    FOREIGN KEY(CODIGO_ANS)
+    REFERENCES CONVENIO(CODIGO_ANS)
 );
 
--- Atributo multivalorado Médico_Requisitante(telefones)
-CREATE TABLE Telefones_medico_req (
-    telefone VARCHAR2(11),
-    cod_med_req VARCHAR2(255),
+CREATE TABLE MEDICO_REQUISITANTE(
+  CODIGO INTEGER,
+  CPF CHAR(11) NOT NULL,
+  CNPJ CHAR(14) NOT NULL,
+  CRM_NUMERO VARCHAR(16) NOT NULL,
+  CRM_ESTADO VARCHAR(16) NOT NULL,
+  NOME VARCHAR(70) NOT NULL,
+  ESPECIALIDADE VARCHAR(50) NOT NULL,
+  END_RUA VARCHAR(50),
+  END_BAIRRO VARCHAR(30),
+  END_CIDADE VARCHAR(50),
+  END_ESTADO VARCHAR(30),
+  END_CEP CHAR(8),
 
-    CONSTRAINT pk_fone_med_req
-        PRIMARY KEY (telefone, cod_med_req),
-    CONSTRAINT fk_fone_med_req_cod
-        FOREIGN KEY (cod_med_req)
-        REFERENCES Medico_requisitante(medico_cod)
-        ON DELETE CASCADE,
-    CONSTRAINT ck_fone_med_req_fone
-        CHECK(LENGTH(telefone) >= 10)
+  CONSTRAINT MEDICO_REQUISITANTE_PK
+    PRIMARY KEY(CODIGO)
 );
 
--- Subclasse Médico Elaborador
-CREATE TABLE Medico_elaborador (
-    medico_cod VARCHAR2(255),
-    endereco VARCHAR2(255),
-    telefone VARCHAR2(11),
-    salario NUMERIC(10,2),
-    carga_horaria INTEGER,
-    data_admissao DATE,
-    data_demissao DATE,
+CREATE TABLE TELEFONES_MEDICOS_REQUISITANTES(
+  CODIGO_MEDICO_REQUISITANTE INTEGER,
+  NUMERO CHAR(12),
 
-    CONSTRAINT pk_med_elab_cod
-        PRIMARY KEY (medico_cod),
-    CONSTRAINT fk_med_elab_cod
-        FOREIGN KEY (medico_cod)
-        REFERENCES Medicos(codigo)
-        ON DELETE CASCADE,
-    CONSTRAINT ck_med_elab_fone
-        CHECK(LENGTH(telefone) >= 10),
-    CONSTRAINT ck_med_elab_salario
-        CHECK(salario >= 0),
-    CONSTRAINT ck_med_elab_carga
-        CHECK((carga_horaria > 0) AND (carga_horaria <= 168)),
-    CONSTRAINT ck_med_elab_data_dem
-        CHECK((data_demissao IS NULL) OR (data_demissao > data_admissao))
+  CONSTRAINT TELEFONES_MEDICOS_REQUISITANTES_PK
+    PRIMARY KEY (CODIGO_MEDICO_REQUISITANTE, NUMERO),
+  CONSTRAINT TELEFONES_MEDICOS_REQUISITANTES_FK
+    FOREIGN KEY (CODIGO_MEDICO_REQUISITANTE)
+    REFERENCES MEDICO_REQUISITANTE(CODIGO)
 );
 
--- Entidade Fraca Dependentes (Entidade Forte: Médico Elaborador)
-CREATE TABLE Dependentes (
-    codigo VARCHAR2(255),
-    cod_medico VARCHAR2(255),
-    nome VARCHAR2(255),
-    idade INTEGER,
-    sexo CHAR(1),
+CREATE TABLE ATENDIMENTO( 
+  CODIGO INTEGER,
+  CPF_PACIENTE CHAR(11) NOT NULL, 
+  CODIGO_ANS CHAR(10),
+  CODIGO_MEDICO_REQUISITANTE INTEGER NOT NULL,
+  DATA_ATENDIMENTO TIMESTAMP NOT NULL,
 
-    CONSTRAINT pk_depend_cod
-        PRIMARY KEY (codigo, cod_medico),
-    CONSTRAINT fk_depend_cod
-        FOREIGN KEY (cod_medico)
-        REFERENCES Medicos(codigo)
-        ON DELETE CASCADE,
-    CONSTRAINT ck_depend_idade
-        CHECK((idade >= 0) AND (idade < 25)),
-    CONSTRAINT ck_depend_sexo
-        CHECK(sexo in ('M', 'F'))
+  CONSTRAINT ATENDIMENTO_PK
+    PRIMARY KEY(CODIGO),
+  CONSTRAINT CPF_PACIENTE_ATENDIMENTO_FK
+    FOREIGN KEY(CPF_PACIENTE)
+    REFERENCES PACIENTE(CPF),
+  CONSTRAINT CODIGO_CONVENIO_ATENDIMENTO_CONVENIO_FK
+    FOREIGN KEY(CODIGO_ANS)
+    REFERENCES CONVENIO(CODIGO_ANS),
+  CONSTRAINT MEDICO_REQUISITANTE_ATENDIMENTO_FK
+    FOREIGN KEY (CODIGO_MEDICO_REQUISITANTE)
+    REFERENCES MEDICO_REQUISITANTE(CODIGO)
 );
 
--- CONVENIOS
+CREATE TABLE MEDICO_ELABORADOR(
+  CODIGO INTEGER,
+  CPF CHAR(11) NOT NULL,
+  CNPJ CHAR(14) NOT NULL,
+  CRM_NUMERO VARCHAR(16) NOT NULL,
+  CRM_ESTADO VARCHAR(16) NOT NULL,
+  NOME VARCHAR(70) NOT NULL,
+  ESPECIALIDADE VARCHAR(50) NOT NULL,
+  ENDERECO VARCHAR(150),
+  TELEFONE CHAR(12) NOT NULL,
+  SALARIO NUMERIC(12,2) NOT NULL,
+  CARGA_HORARIA SMALLINT NOT NULL,
+  DATA_ADMISSAO DATE,
+  DATA_DEMISSAO DATE,
 
--- Entidade Regular Convênio
-CREATE TABLE Convenio (
-    codigo_ANS VARCHAR2(6),
-    codigo_da_operadora VARCHAR2(255),
-    cnpj VARCHAR2(14),
-    nome VARCHAR2(255),
-    endereco VARCHAR2(255),
-    email VARCHAR2(255),
-    
-    CONSTRAINT pk_conv_cod
-        PRIMARY KEY (codigo_ANS),
-    CONSTRAINT ck_conv_cnpj
-        CHECK(LENGTH(cnpj) = 14),
-    CONSTRAINT ck_conv_ans
-        CHECK(LENGTH(codigo_ANS) = 6)
+  CONSTRAINT MEDICO_ELABORADOR_PK
+    PRIMARY KEY(CODIGO)
 );
 
--- Atributo multivalorado Convênio(telefones)
-CREATE TABLE Telefones_convenio (
-    telefone VARCHAR2(11),
-    conv_codigo_ANS VARCHAR2(6),
+CREATE TABLE DEPENDENTE( 
+  CODIGO_DEPENDENTE INTEGER,
+  CODIGO_MEDICO_ELABORADOR INTEGER,
+  NOME VARCHAR(70) NOT NULL,
+  IDADE SMALLINT,
+  SEXO VARCHAR(10),
 
-    CONSTRAINT pk_fone_convenio_cod
-        PRIMARY KEY (telefone, conv_codigo_ANS),
-    CONSTRAINT fk_fone_convenio_cod
-        FOREIGN KEY (conv_codigo_ANS)
-        REFERENCES Convenio(codigo_ANS)
-        ON DELETE CASCADE,
-    CONSTRAINT ck_fone_convenio CHECK(LENGTH(telefone) >= 10)
+  CONSTRAINT DEPENDENTE_PK
+    PRIMARY KEY (CODIGO_DEPENDENTE, CODIGO_MEDICO_ELABORADOR),
+  CONSTRAINT DEPENDENTE_FK
+    FOREIGN KEY(CODIGO_MEDICO_ELABORADOR)
+    REFERENCES MEDICO_ELABORADOR(CODIGO)
 );
 
--- Relacionamento "Atende" entre Médico e Convênio
-CREATE TABLE Medicos_convenio (
-    cod_convenio VARCHAR2(6),
-    cod_medico VARCHAR2(255),
+CREATE TABLE EXAME(
+  CODIGO INTEGER,
+  NOME_EXAME VARCHAR(40) NOT NULL,
+  MATERIAL_COLHEITA VARCHAR(50) NOT NULL,
+  CLASSE_EXAME VARCHAR(30) NOT NULL,
+  SUBSTANCIAS_USADAS VARCHAR(250),
+  METODO VARCHAR(50),
+  PRAZO_EXAME INTEGER,
+  VALORES_REFERENCIA VARCHAR(200) NOT NULL,
+  NOTA NUMERIC(2,1) DEFAULT 0,
+  UNIDADE VARCHAR(10),
+  CODIGO_MEDICO_ELABORADOR INTEGER NOT NULL,
 
-    CONSTRAINT pk_med_conv_cod
-        PRIMARY KEY (cod_convenio, cod_medico),
-    CONSTRAINT fk_med_conv_cod
-        FOREIGN KEY (cod_medico)
-        REFERENCES Medicos(codigo)
-        ON DELETE CASCADE,
-    CONSTRAINT ck_med_conv_ans
-        FOREIGN KEY (cod_convenio)
-        REFERENCES Convenio(codigo_ANS)
-        ON DELETE CASCADE
+  CONSTRAINT EXAME_PK
+    PRIMARY KEY(CODIGO),
+  CONSTRAINT MEDICO_ELABORADOR_EXAME_REALIZADO_FK
+    FOREIGN KEY(CODIGO_MEDICO_ELABORADOR)
+    REFERENCES MEDICO_ELABORADOR(CODIGO)
 );
 
--- Relacionamento "Contrata" entre Paciente e Convênio
-CREATE TABLE Contratos_pac_conv (
-    cpf_paciente VARCHAR2(11),
-    cod_ANS_convenio VARCHAR2(6),
-    data_expiracao DATE,
-    numero INTEGER,
 
-    CONSTRAINT pk_cont_cpf_ans
-        PRIMARY KEY(cpf_paciente, cod_ANS_convenio),
-    CONSTRAINT fk_cont_ans
-        FOREIGN KEY (cod_ANS_convenio)
-        REFERENCES Convenio(codigo_ANS)
-        ON DELETE CASCADE,
-    CONSTRAINT fk_cont_cpf
-        FOREIGN KEY (cpf_paciente)
-        REFERENCES Pacientes(cpf)
-        ON DELETE CASCADE,
-    CONSTRAINT ck_cont_num
-        CHECK(numero >= 0)
+CREATE TABLE FORMAS_PAGAMENTO(
+  ID INTEGER,
+  FORMA VARCHAR(30) NOT NULL,
+
+  CONSTRAINT FORMAS_PAGAMENTO_PK
+    PRIMARY KEY(ID)
 );
 
--- EXAMES
+CREATE TABLE PACIENTE_CONVENIO(
+  CPF_PACIENTE CHAR(11),
+  CODIGO_ANS CHAR(10),
+  NUMERO INTEGER,
+  DATA_EXPIRACAO DATE,
 
--- Entidade regular Exames
-CREATE TABLE Exames (
-    codigo_exame VARCHAR2(255),
-    cod_med_req VARCHAR2(255),
-    cod_med_elab VARCHAR2(255),
-    classe_exame VARCHAR2(255),
-    material_coleta VARCHAR2(255),
-    metodo VARCHAR2(255),
-    nome_exame VARCHAR2(255),
-    nota VARCHAR2(255),
-    prazo_exame DATE,
-    substancias_usadas VARCHAR2(255),
-    unidade VARCHAR2(255),
-    valores_de_referencia VARCHAR2(255),
-
-    CONSTRAINT pk_exam_cod
-        PRIMARY KEY (codigo_exame),
-    CONSTRAINT fk_exam_cod_med_req
-        FOREIGN KEY (cod_med_req)
-        REFERENCES Medico_requisitante(medico_cod),
-    CONSTRAINT fk_exam_cod_med_elab
-        FOREIGN KEY (cod_med_elab)
-        REFERENCES Medico_elaborador(medico_cod)
+  CONSTRAINT PLANO_CONVENIO_PK
+    PRIMARY KEY(CPF_PACIENTE, CODIGO_ANS),
+  CONSTRAINT CPF_PACIENTE_PLANO_FK
+    FOREIGN KEY(CPF_PACIENTE)
+    REFERENCES PACIENTE(CPF),
+  CONSTRAINT CODIGO_CONVENIO_PLANO_FK
+    FOREIGN KEY(CODIGO_ANS)
+    REFERENCES CONVENIO(CODIGO_ANS)
 );
 
--- Relacionamento "Provê" entre Convênio e Exame
-CREATE TABLE Exames_convenio (
-    cod_exame VARCHAR2(255),
-    cod_convenio VARCHAR2(6),
-    preco NUMERIC(10,2),
+CREATE TABLE EXAME_PROVIDO(
+  CODIGO_ANS CHAR(10),
+  CODIGO_EXAME INTEGER,
+  PRECO NUMERIC(6,2) NOT NULL,
 
-    CONSTRAINT pk_exam_conv_cod
-        PRIMARY KEY(cod_exame, cod_convenio),
-    CONSTRAINT fk_exam_conv_cod
-        FOREIGN KEY (cod_exame)
-        REFERENCES Exames(codigo_exame)
-        ON DELETE CASCADE,
-    CONSTRAINT fk_exam_conv_ans
-        FOREIGN KEY (cod_convenio)
-        REFERENCES Convenio(codigo_ANS)
-        ON DELETE CASCADE,
-    CONSTRAINT ck_exam_conv_preco
-        CHECK(preco >= 0)
+  CONSTRAINT EXAME_PROVIDO_PK
+    PRIMARY KEY(CODIGO_ANS, CODIGO_EXAME),
+  CONSTRAINT CODIGO_ANS_EXAME_PROVIDO_FK
+    FOREIGN KEY(CODIGO_ANS)
+    REFERENCES CONVENIO(CODIGO_ANS),
+  CONSTRAINT CODIGO_EXAME_EXAME_PROVIDO_FK
+    FOREIGN KEY(CODIGO_EXAME)
+    REFERENCES EXAME(CODIGO)
 );
 
--- ATENDIMENTOS
+CREATE TABLE EXAME_REQUERIDO_ATENDIMENTO(
+  CODIGO_ATENDIMENTO INTEGER,
+  CODIGO_EXAME INTEGER,
+  RESULTADO VARCHAR(200),
+  TIMESTAMP_COLETA TIMESTAMP,
+  TIMESTAMP_LIBERACAO TIMESTAMP,
+  PRECO NUMERIC(6,2),
 
--- Entidade Regular Atendimentos
-CREATE TABLE Atendimentos (
-    codigo VARCHAR2(255),
-    paciente_cpf VARCHAR2(11),
-    cod_med VARCHAR2(6),
-    cod_convenio VARCHAR2(6),
-    data_atendimento DATE,
-    hora INTERVAL DAY TO SECOND,
-
-    CONSTRAINT pk_atend_cod
-        PRIMARY KEY (codigo),
-    CONSTRAINT fk_atend_cpf
-        FOREIGN KEY (paciente_cpf)
-        REFERENCES Pacientes(cpf)
-        ON DELETE CASCADE,
-    CONSTRAINT fk_atend_cod_med
-        FOREIGN KEY (cod_med)
-        REFERENCES Medico_requisitante(medico_cod)
-        ON DELETE CASCADE,
-    CONSTRAINT fk_atend_ans
-        FOREIGN KEY (cod_convenio)
-        REFERENCES Convenio(codigo_ANS)
-        ON DELETE CASCADE
+  CONSTRAINT EXAME_REQUERIDO_ATENDIMENTO_PK
+    PRIMARY KEY (CODIGO_ATENDIMENTO, CODIGO_EXAME),
+  CONSTRAINT ATENDIMENTO_EXAME_REQUERIDO_ATENDIMENTO_FK
+    FOREIGN KEY(CODIGO_ATENDIMENTO)
+    REFERENCES ATENDIMENTO(CODIGO),
+  CONSTRAINT EXAME_EXAME_REQUERIDO_ATENDIMENTO_FK
+    FOREIGN KEY(CODIGO_EXAME)
+    REFERENCES EXAME(CODIGO)
 );
 
--- Relacionamento "Requere" entre Atendimento e Exame
-CREATE TABLE Requerimentos (
-    cod_atendimento VARCHAR2(255),
-    cod_exame VARCHAR2(255),
-    timestamp_coleta timestamp,
-    timestamp_liberacao timestamp,
-    resultado VARCHAR2(255),
-    preco NUMERIC(10,2),
+CREATE TABLE CONVENIO_MEDICO_REQUISITANTE(
+  CODIGO_ANS CHAR(10),
+  CODIGO_MEDICO_REQUISITANTE INTEGER,
 
-    CONSTRAINT pk_req_cod_atend_exam
-        PRIMARY KEY (cod_atendimento, cod_exame),
-    CONSTRAINT fk_req_cod_exam
-        FOREIGN KEY (cod_exame)
-        REFERENCES Exames(codigo_exame)
-        ON DELETE CASCADE,
-    CONSTRAINT fk_req_cod_atend
-        FOREIGN KEY (cod_atendimento)
-        REFERENCES Atendimentos(codigo)
-        ON DELETE CASCADE,
-    CONSTRAINT ck_req_preco
-        CHECK(preco >= 0),
-    CONSTRAINT ck_req_time_lib
-        CHECK((timestamp_liberacao is NULL)
-            OR (timestamp_liberacao >= timestamp_coleta))
+  CONSTRAINT ATENDIMENTO_MEDICO_REQUISITANTE_PK
+    PRIMARY KEY(CODIGO_ANS, CODIGO_MEDICO_REQUISITANTE),
+  CONSTRAINT CONVENIO_ATENDIMENTO_MEDICO_REQUISITANTE_FK
+    FOREIGN KEY(CODIGO_ANS)
+    REFERENCES CONVENIO(CODIGO_ANS),
+  CONSTRAINT MEDICO_REQUISITANTE_ATENDIMENTO_MEDICO_REQUISITANTE_FK
+    FOREIGN KEY(CODIGO_MEDICO_REQUISITANTE)
+    REFERENCES MEDICO_REQUISITANTE(CODIGO)
 );
 
--- FORMAS DE PAGAMENTO
+CREATE TABLE REQUISICAO_EXAME(
+  CODIGO_MEDICO_REQUISITANTE INTEGER,
+  CODIGO_EXAME INTEGER,
 
--- Entidade regular "Formas de Pagamento"
-CREATE TABLE Formas_de_pagamento (
-    id_forma_pagamento VARCHAR2(255),
-    forma VARCHAR2(255) NOT NULL UNIQUE,
-
-    CONSTRAINT pk_forma_id
-        PRIMARY KEY (id_forma_pagamento)
+  CONSTRAINT REQUISICAO_EXAME_PK
+    PRIMARY KEY(CODIGO_MEDICO_REQUISITANTE, CODIGO_EXAME),
+  CONSTRAINT MEDICO_REQUISITANTE_REQUISICAO_EXAME_FK
+    FOREIGN KEY(CODIGO_MEDICO_REQUISITANTE)
+    REFERENCES MEDICO_REQUISITANTE(CODIGO),
+  CONSTRAINT EXAME_REQUISICAO_EXAME_FK
+    FOREIGN KEY(CODIGO_EXAME)
+    REFERENCES EXAME(CODIGO)
 );
 
--- Relacionamento "está" entre Formas de Pagamento e Atendimento
-CREATE TABLE Pagamentos (
-    id_forma VARCHAR2(255),
-    cod_atendimento VARCHAR2(255),
-    valor NUMERIC(10,2),
+CREATE TABLE FORMAS_PAGAMENTO_ATENDIMENTO(
+  CODIGO_ATENDIMENTO INTEGER NOT NULL,
+  CODIGO_FORMA_PAGAMENTO INTEGER NOT NULL,
 
-    CONSTRAINT pk_pag_id_forma_cod_atend
-        PRIMARY KEY (id_forma, cod_atendimento),
-    CONSTRAINT fk_pag_id_forma
-        FOREIGN KEY (id_forma)
-        REFERENCES Formas_de_pagamento(id_forma_pagamento)
-        ON DELETE CASCADE,
-    CONSTRAINT fk_pag_cod_atend
-        FOREIGN KEY (cod_atendimento)
-        REFERENCES Atendimentos(codigo)
-        ON DELETE CASCADE,
-    CONSTRAINT ck_pag_valor
-        CHECK(valor >= 0)
+  CONSTRAINT FORMAS_PAGAMENTO_ATENDIMENTO_PK
+    PRIMARY KEY(CODIGO_ATENDIMENTO, CODIGO_FORMA_PAGAMENTO),
+  CONSTRAINT FORMAS_PAGAMENTO_ATENDIMENTO_FK
+    FOREIGN KEY(CODIGO_ATENDIMENTO)
+    REFERENCES ATENDIMENTO(CODIGO),
+  CONSTRAINT FORMAS_PAGAMENTO_FK
+    FOREIGN KEY(CODIGO_FORMA_PAGAMENTO)
+    REFERENCES FORMAS_PAGAMENTO(ID)
 );
+
+CREATE SEQUENCE PACIENTE_SEQ
+  MINVALUE 1
+  MAXVALUE 9999999999
+  INCREMENT BY 1
+  START WITH 1
+  NOCYCLE;
+CREATE SEQUENCE CONVENIO_SEQ
+  MINVALUE 1
+  MAXVALUE 9999999999
+  INCREMENT BY 1
+  START WITH 1
+  NOCYCLE;
+CREATE SEQUENCE ATENDIMENTO_SEQ
+  MINVALUE 1
+  MAXVALUE 9999999999
+  INCREMENT BY 1
+  START WITH 1
+  NOCYCLE;
+CREATE SEQUENCE MEDICO_REQUISITANTE_SEQ
+  MINVALUE 1
+  MAXVALUE 9999999999
+  INCREMENT BY 1
+  START WITH 1
+  NOCYCLE;
+CREATE SEQUENCE MEDICO_ELABORADOR_SEQ
+  MINVALUE 1
+  MAXVALUE 9999999999
+  INCREMENT BY 1
+  START WITH 1
+  NOCYCLE;
+CREATE SEQUENCE EXAME_SEQ
+  MINVALUE 1
+  MAXVALUE 9999999999
+  INCREMENT BY 1
+  START WITH 1
+  NOCYCLE;
