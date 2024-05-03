@@ -51,4 +51,31 @@ projete o nome e a especialidade. [Solução](https://github.com/joaomatheusvill
 10. Quais pacientes não fizeram nenhum atendimento em 2023 ou não possuem 
 convênio, projete o nome e cpf. [Solução](https://github.com/joaomatheusvillarim/clinicaTopExames/blob/main/sql/questao10.sql)
 
-## Quarta fase: em breve...
+## Quarta fase: Triggers
+1. Implemente uma função PL/SQL chamada calcula_total_salario_elaborador.
+Esta função deverá receber a especialidade de um médico elaborador e
+retornar a soma de salário dos médicos que possuem essa especialidade.
+2. Implemente uma procedure chamada remove_paciente_convenio. Esta
+procedure recebe o cpf do paciente e o codigo_ans do convênio e apaga do
+banco qualquer relação de entre o paciente e convênio fornecidos.
+3. Implemente uma função chamada preco_medio_exames_convenio. Essa
+função recebe o código_ans do convênio e retorna a média do valor de todos
+os exames providos pelo o convênio.
+4. Crie uma visão que mostra os dependentes de médicos elaboradores que
+possuem salário maior que 20000 R$ e que já realizaram pelo menos um 
+exame com o nome de “Radiografia”.
+5. Crie uma visão que mostre os pacientes que possuem algum atendimento
+onde o médico requisitante responsável pelo atendimento mora na mesma
+cidade do paciente. Exiba o nome do paciente e a cidade.
+6. Crie uma visão que liste o nome de todos os convênios que possuem pelo
+menos um exame elaborado pelo médico elaborador cujo seu CRM_numero
+é igual a 1111.
+7. Crie uma visão que exiba o nome (forma) da forma de pagamento e quantos
+atendimento foram pagos usando essa forma de pagamento.
+8. Crie um trigger que impeça a inserção de exame que tenha o atributo
+resultado como vazio ou nulo.
+9. Crie um trigger para modificar o nome do dependente deixando a primeira
+letra no nome sempre maiúscula quando esse dado for inserido ou
+atualizado.
+10. Crie um trigger que impeça a inserção ou atualização do preço de um exame
+relacionado com convênio que seja menor que 30,00 R$.
